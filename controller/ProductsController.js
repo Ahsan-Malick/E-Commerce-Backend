@@ -38,6 +38,7 @@ exports.fetchAllProducts = async (req, res) => {
     docsQuery = docsQuery.skip((page - 1) * pageSize).limit(pageSize);
   }
 
+
   try {
   const totalDocs = await docsQuery.count().exec();
   res.set("X-Total-Count", totalDocs);
@@ -46,9 +47,36 @@ exports.fetchAllProducts = async (req, res) => {
   }
 
   try {
-    const docs = await prodQuery.exec();
+    const docs = await prodQuery.exec(); 
     res.status(200).json(docs);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
+
+exports.fetchProductById = async (req, res) => {
+  // this product we have to get from API body.
+const {id} = req.params;
+  
+  try {
+    const product = await Product.findById(id).exec()
+    res.status(200).json(product);
+  } catch (err) {
+    // Add the 'err' parameter here
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  // this product we have to get from API body.
+const {id} = req.params;
+  
+  try {
+    const product = await Product.findByIdAndUpdate(id, req.body, {new: true}).exec();
+    res.status(200).json(product);
+  } catch (err) {
+    // Add the 'err' parameter here
+    res.status(400).json({ error: err.message });
+  }
+};
+
