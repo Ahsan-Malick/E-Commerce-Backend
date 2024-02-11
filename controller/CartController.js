@@ -1,4 +1,5 @@
 const { Cart } = require("../model/CartModel");
+const { Product } = require("../model/ProductsModel");
 
 exports.postCart = async (req, res) => {
     // this product we have to get from API body.
@@ -6,7 +7,7 @@ exports.postCart = async (req, res) => {
 
     try {
         const carts = await items.save();
-      res.status(200).json(carts);
+      res.status(200).json(result);
     } catch (err) {
       // Add the 'err' parameter here
       res.status(400).json({ error: err.message });
@@ -14,11 +15,13 @@ exports.postCart = async (req, res) => {
   };
 
   exports.getCartById = async (req, res) => {
-    // this product we have to get from API body.
-    const id=req.params.id;
+    //this product we have to get from API body.
+    const id=req.user.id;
+    console.log(id)
 
     try {
-        const carts = await Cart.findById(id);
+        const carts = await Cart.findOne({user:id}).populate('user').populate('product');
+        // const result = await carts.populate('product')
       res.status(200).json(carts);
     } catch (err) {
       // Add the 'err' parameter here
@@ -29,6 +32,7 @@ exports.postCart = async (req, res) => {
 
   exports.getCart = async (req, res) => {
     // this product we have to get from API body.
+    console.log(req.user)
     let query = Cart.find({})
     if(req.query.user){
       query=query.find({user:req.query.user});
@@ -38,8 +42,9 @@ exports.postCart = async (req, res) => {
     }
 
     try {
-        const carts = await query.exec();
-      res.status(200).json(carts);
+        // const carts = await query.exec(); CHECKKKKK!!!!!!!!!!!!
+        const result = await query.populate('user').populate('product');
+      res.status(200).json(result);
     } catch (err) {
       // Add the 'err' parameter here
       res.status(400).json({ error: err.message });
