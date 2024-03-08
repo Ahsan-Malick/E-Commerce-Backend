@@ -64,10 +64,8 @@ passport.use(
     cb
   ) {
     //it gets username and password comming from client in req.body on the given route.
-    console.log({ email: email });
     try {
       const user = await User.findOne({ email: email }).exec();
-      console.log({ user: user });
       if (!user) {
         cb(null, false, { message: "Invalid Email or Password" });
       }
@@ -99,7 +97,6 @@ passport.use(
     //jwt_payload comes from sanitize(user) value.
 
     const id = jwt_payload.id;
-    console.log(id);
 
     try {
       const user = await User.findById(id);

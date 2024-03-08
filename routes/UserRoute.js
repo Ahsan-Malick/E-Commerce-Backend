@@ -4,5 +4,5 @@ const passport = require('passport');
 const router = express.Router();
 
 
-router.get('/',fetchUser);
+router.get('/',passport.authenticate('jwt'),fetchUser);
 module.exports = router;
