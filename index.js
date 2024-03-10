@@ -136,14 +136,13 @@ passport.deserializeUser(function (user, cb) {
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/e-commerce");
+  await mongoose.connect(process.env.MONGO_URI);
 }
 
 server.get("/myhome",(req, res) => {
   res.json("success");
 });
 
-// 
 
 // server.post('/products', createProduct);
 
