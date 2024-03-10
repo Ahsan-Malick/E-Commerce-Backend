@@ -139,9 +139,11 @@ async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/e-commerce");
 }
 
-server.get("/chk", passport.authenticate("Jwt"), (req, res) => {
+server.get("/myhome",(req, res) => {
   res.json("success");
 });
+
+// 
 
 // server.post('/products', createProduct);
 
