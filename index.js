@@ -1,5 +1,6 @@
 const express = require("express");
 const server = express();
+require('dotenv').config()
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const cookieSession = require("cookie-session");
@@ -26,6 +27,8 @@ const { User } = require("./model/UserModel");
 const cors = require("cors");
 
 const Key = "secret";
+// const Key = process.env.KEY;
+console.log(typeof(Key));
 
 //JWT options
 const opts = {};
@@ -142,6 +145,6 @@ server.get("/chk", passport.authenticate("Jwt"), (req, res) => {
 
 // server.post('/products', createProduct);
 
-server.listen(8080, () => {
-  console.log("server working");
+server.listen(process.env.PORT, () => {
+  console.log(process.env.PORT);
 });
