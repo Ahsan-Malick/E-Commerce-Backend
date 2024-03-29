@@ -1,5 +1,6 @@
 const { User } = require("../model/UserModel");
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 const { sanitizeUser } = require("../services/Common");
 const jwt = require("jsonwebtoken");
 const Key = "secret";
@@ -20,6 +21,7 @@ exports.createUser = async (req, res) => {
             password: hashedPassword,
             salt: salt,
           });
+          console.log({hashedPassword})
           const doc = await user.save();
           req.login(sanitizeUser(doc), () => {
             //this also calls serializer and add to user
@@ -55,10 +57,61 @@ exports.createUser = async (req, res) => {
   };
   ``;
   exports.checkUser = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const existinghashedPassword = req.user.id;
+    const user = await User.findById(req.user.id);
+    console.log(user.password);
+    bcrypt.compare(currentPassword, existinghashedPassword, function(err, isMatch) {
+      if (err) {
+        res.status(500).json({ message: 'An error occurred', err });
+      } else if (!isMatch) {
+        res.status(400).json({ message: 'Invalid password' });
+      } else {
+        console.log('password matched successfully')
+      }
+    });
+  };
+
+  exports.updateUserName = async (req, res) => {
+    const { firstname, lastname } = req.body;
+    const userId = req.user.id;
+    console.log(req.body)
+  
     try {
-      console.log({userInfo:  req.user})
-      res.json({ status: "success", user: req.user });
-    } catch (err) {
-      res.sendStatus(400).json({ error: err.message });
+      const user = await User.findOneAndUpdate({ _id: userId },{$set: {firstname:firstname, lastname:lastname}},{new: true});
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: 'An error occurred', error });
     }
   };
+
+  exports.updatePassword = async(req,res) => {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
+    let existinghashedPassword = req.user.password;
+   const user = await User.findById(userId);
+   //in the following function the current passowrd is hashed using the salt of the user and then compared with the existing hashed password.
+    crypto.pbkdf2(currentPassword, user.salt, 310000, 32, "sha256", async function (err, hashedPassword) {
+      if (!crypto.timingSafeEqual(existinghashedPassword, hashedPassword)) {
+        res.status(400).json({ message: 'Invalid password' });
+      } else {
+        try {
+          const salt = crypto.randomBytes(16);
+          crypto.pbkdf2(
+            newPassword,
+            salt,
+            310000,
+            32,
+            "sha256",
+            async function (err, hashedPassword) {
+              const user = await User.findOneAndUpdate({ _id: userId },{$set: {password:hashedPassword, salt:salt}},{new: true});
+              res.status(200).json({ message: 'Password updated successfully'});
+            }
+          );
+        } catch (error) {
+          res.status(500).json({ message: "Error Caught", error});
+        }
+      }
+    
+ });
+  }

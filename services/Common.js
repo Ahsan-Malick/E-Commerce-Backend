@@ -7,7 +7,7 @@ exports.isAuth = (req, res, next) => {
 
 exports.sanitizeUser = (user) => {
 
- return {id: user.id, email: user.email}
+ return {id: user.id, firstname: user.firstname, lastname: user.lastname, email: user.email}
 };
 
 exports.cookieExtractor = function(req){
@@ -15,7 +15,7 @@ exports.cookieExtractor = function(req){
   // // if(req && req.cookies){
   // //   // token = req.cookies['jwt'];
   // // }
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YzE1YjUyMmU4YmI4NDQwZjI3ZTc3MSIsImVtYWlsIjoiYWhzYW5AeWFtYWlsLmNvbSIsImlhdCI6MTcwODYzMDQ2OH0.WuD9eginRXojHjj7r7RzLh4Rz_tDmPB9gK4OS27WAxY"
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZjI5NjUzMWE5MDdhMjYxNzc4YjlmOSIsImZpcnN0bmFtZSI6IkFoc2FuIiwibGFzdG5hbWUiOiJNYWxpayIsImVtYWlsIjoiYWhzYW5AeWFtYWlsLmNvbSIsImlhdCI6MTcxMTUxNDg4NH0.b_HLFOUkMrbGwtuiueniSXT1oUIaOuR_8Btmn-HMxqQ"
 
   return token;
 }
