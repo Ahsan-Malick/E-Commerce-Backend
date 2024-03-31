@@ -24,3 +24,13 @@ exports.postOrderDetail = async (req, res) => {
     res.status(400).json({ Alert: error });
   }
 };
+
+exports.deleteOrderDetail = async (req, res) => {
+  let id = req.user.id;
+  try {
+    await Order.deleteMany({ user: id });
+    res.status(200).json({ message: 'Orders deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ Alert: error });
+  }
+};

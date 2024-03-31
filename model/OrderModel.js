@@ -10,20 +10,26 @@ const orderSchema = new Schema({
     postcode: { type: String, required: true },
     country: { type: String, required: true },
   },
-  productdetail:{type: [Object], required: true},
+  productdetail: { type: [Object], required: true },
   payment: { type: String, required: true },
   subtotal: { type: Number, required: true },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
   user: { type: String, required: true },
 });
-const virtual = orderSchema.virtual('id');
-virtual.get(function(){
-    return this._id;
-})
+const virtual = orderSchema.virtual("id");
+virtual.get(function () {
+  return this._id;
+});
 
-orderSchema.set('toJSON',{
-    virtuals: true,
-    versionKey: false,
-    transform: function(doc, ret) {delete ret._id}
-})
+orderSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});
 
-exports.Order = mongoose.model('Order', orderSchema);
+exports.Order = mongoose.model("Order", orderSchema);
