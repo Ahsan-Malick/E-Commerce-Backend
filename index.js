@@ -144,7 +144,7 @@ async function main() {
   await mongoose.connect(process.env.MONGO_URI);
 }
 
-server.get("/myhome", (req, res) => {
+server.get("/", (req, res) => {
   res.json("success");
 });
 
