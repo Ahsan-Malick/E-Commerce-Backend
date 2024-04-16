@@ -1,10 +1,10 @@
 const express = require("express");
 const server = express();
-require('dotenv').config()
+require("dotenv").config();
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const cookieSession = require("cookie-session");
-const {cookieExtractor} = require("./services/Common");
+const { cookieExtractor } = require("./services/Common");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const crypto = require("crypto");
@@ -18,7 +18,7 @@ const cartRouter = require("./routes/CartRoute");
 const addressRouter = require("./routes/AddressRoute");
 const orderRouter = require("./routes/OrderRoute");
 const testRouter = require("./routes/testRoute");
-const authRouter = require("./routes/authRoute")
+const authRouter = require("./routes/authRoute");
 const { isAuth, sanitizeUser } = require("./services/Common");
 const jwt = require("jsonwebtoken");
 const JwtStrategy = require("passport-jwt").Strategy;
@@ -28,8 +28,6 @@ const cors = require("cors");
 
 const Key = "secret";
 // const Key = process.env.KEY;
-console.log(typeof(Key));
-
 //JWT options
 const opts = {};
 // opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
@@ -58,6 +56,10 @@ server.use("/addresses", addressRouter);
 server.use("/order", isAuth(), orderRouter);
 server.use("/", isAuth(), testRouter);
 
+// async function main() {
+//   await mongoose.connect(process.env.MONGO_URI);
+// }
+
 //passport strategies
 passport.use(
   "local",
@@ -79,7 +81,8 @@ passport.use(
         32,
         "sha256",
         async function (err, hashedPassword) {
-          if (!crypto.timingSafeEqual(user.password, hashedPassword)) { // user.password comes from findOne req, which was already saved in hashed form. Hashedpassword is the incoming passowrd from client, which is encrypted. 
+          if (!crypto.timingSafeEqual(user.password, hashedPassword)) {
+            // user.password comes from findOne req, which was already saved in hashed form. Hashedpassword is the incoming passowrd from client, which is encrypted.
             cb(null, false, { message: "Invalid Email or Password" });
           } else {
             const token = jwt.sign(sanitizeUser(user), Key); //first arguement contains user info, second contains key and it converts user info and key into a token code.
@@ -89,6 +92,8 @@ passport.use(
         }
       );
     } catch (error) {
+      const user = await User.find();
+      console.log(user)
       console.log({ message: error });
     }
   })
@@ -139,10 +144,9 @@ async function main() {
   await mongoose.connect(process.env.MONGO_URI);
 }
 
-server.get("/myhome",(req, res) => {
+server.get("/myhome", (req, res) => {
   res.json("success");
 });
-
 
 // server.post('/products', createProduct);
 
