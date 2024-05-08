@@ -52,15 +52,13 @@ server.use("/category", isAuth(), categoryRouter);
 server.use("/user", isAuth(), userRouter);
 server.use("/auth", authRouter);
 server.use("/cart", isAuth(), cartRouter);
-server.use("/addresses", addressRouter);
+server.use("/addresses", isAuth(), addressRouter);
 server.use("/order", isAuth(), orderRouter);
 server.use("/", isAuth(), testRouter);
 
-// async function main() {
-//   await mongoose.connect(process.env.MONGO_URI);
-// }
 
-//passport strategies
+
+//passport strategies //require for 1st login route
 passport.use(
   "local",
   new LocalStrategy({ usernameField: "email" }, async function (
@@ -85,31 +83,30 @@ passport.use(
             // user.password comes from findOne req, which was already saved in hashed form. Hashedpassword is the incoming passowrd from client, which is encrypted.
             cb(null, false, { message: "Invalid Email or Password" });
           } else {
-            const token = jwt.sign(sanitizeUser(user), Key); //first arguement contains user info, second contains key and it converts user info and key into a token code.
 
-            cb(null, token); //this line makes req.user true and send the returned value to serializer.
+            cb(null, {id: user.id}); //this line makes req.user true and send the returned value to serializer.
           }
         }
       );
     } catch (error) {
       const user = await User.find();
-      console.log(user)
       console.log({ message: error });
     }
   })
 );
+//then we can use jwt authentication on all other route as we aleady have a user token now
+// The opts object configures how the JwtStrategy finds and decodes the JWT token.
 passport.use(
   "jwt",
   new JwtStrategy(opts, async function (jwt_payload, done) {
-    // require token from client to get user value on given route or take token value and convert that to the userInfo.
+    // require token from client to get user value on given route or take token value and convert that to the usernfo.
     //jwt_payload comes from sanitize(user) value.
 
     const id = jwt_payload.id;
-
     try {
-      const user = await User.findById(id);
-      if (user) {
-        return done(null, user);
+      const usero = await User.findById(id);
+      if (usero) {
+        return done(null, usero);
       } else {
         return done(null, false);
         // or you could create a new account
@@ -124,15 +121,16 @@ passport.use(
 
 //serialize basically means to convert the incomming data structure to some common and easy to store form like JSON.
 passport.serializeUser(function (user, cb) {
-  console.log("serializer");
   process.nextTick(function () {
-    return cb(null, user);
+    return cb(null, {id:user.id});
   });
 });
 
-//deserializer will convert that JSON data back to its original data structure. Need more explanation.
+//from token convert that token to user and make it useful on routes where jwt strategy is implemented as a middleware
+//the deserializeUser function usually takes the ID (or other identifying information) from the jwt_payload and fetches the corresponding user object from your database.
+//The fetched user object is then attached to the request as req.user
 passport.deserializeUser(function (user, cb) {
-  console.log("deserializer");
+  console.log("deser1",{user});
   process.nextTick(function () {
     return cb(null, user);
   });
