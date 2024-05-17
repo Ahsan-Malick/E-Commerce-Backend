@@ -36,7 +36,7 @@ opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = Key;
 //middlewares
 
-server.use(cors());
+// server.use(cors());
 // server.use(express.static('build'));
 
 server.use(express.static(path.resolve(__dirname, 'build')));
