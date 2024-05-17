@@ -32,6 +32,7 @@ exports.createUser = async (req, res) => {
               res.cookie("jwt", token, {
                 expires: new Date(Date.now() + 360000),
                 httpOnly: true,
+                sameSite: "strict"
               });
               res.status(201).json(token);
             }
@@ -51,6 +52,7 @@ exports.createUser = async (req, res) => {
       res.cookie("jwt", token, {
         expires: new Date(Date.now() + 360000),
         httpOnly: true,
+        sameSite: "strict"
       });
       res.json({ status: "Login successfully", token: req.user });
     } catch (err) {
@@ -127,4 +129,9 @@ exports.createUser = async (req, res) => {
     res.sendStatus(401);
   }
 
+  }
+
+  exports.clearCookies = async(req,res)=>{
+    res.clearCookie('jwt');
+    res.send({ message: 'Logout successful' });
   }

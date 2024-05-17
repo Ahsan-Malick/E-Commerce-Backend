@@ -7,6 +7,7 @@ const cookieSession = require("cookie-session");
 const { cookieExtractor } = require("./services/Common");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const path = require('path');
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const { createProduct } = require("./controller/ProductsController");
@@ -34,8 +35,11 @@ const opts = {};
 opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = Key;
 //middlewares
-// server.use(express.static('build'));
+
 server.use(cors());
+// server.use(express.static('build'));
+
+server.use(express.static(path.resolve(__dirname, 'build')));
 server.use(cookieParser()); //to read cookies comming from client request
 server.use(
   session({
@@ -51,10 +55,12 @@ server.use("/brands", isAuth(), brandRouter);
 server.use("/category", isAuth(), categoryRouter);
 server.use("/user", isAuth(), userRouter);
 server.use("/auth", authRouter);
-server.use("/cart", isAuth(), cartRouter);
+server.use("/carts", isAuth(), cartRouter);
 server.use("/addresses", isAuth(), addressRouter);
-server.use("/order", isAuth(), orderRouter);
-server.use("/", isAuth(), testRouter);
+server.use("/orders", isAuth(), orderRouter);
+server.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "build", "index.html"));
+});
 
 
 
@@ -104,9 +110,9 @@ passport.use(
 
     const id = jwt_payload.id;
     try {
-      const usero = await User.findById(id);
-      if (usero) {
-        return done(null, usero);
+      const user = await User.findById(id);
+      if (user) {
+        return done(null, user);
       } else {
         return done(null, false);
         // or you could create a new account
@@ -130,7 +136,6 @@ passport.serializeUser(function (user, cb) {
 //the deserializeUser function usually takes the ID (or other identifying information) from the jwt_payload and fetches the corresponding user object from your database.
 //The fetched user object is then attached to the request as req.user
 passport.deserializeUser(function (user, cb) {
-  console.log("deser1",{user});
   process.nextTick(function () {
     return cb(null, user);
   });
@@ -142,11 +147,8 @@ async function main() {
   await mongoose.connect(process.env.MONGO_URI);
 }
 
-server.get("/", (req, res) => {
-  res.json("success");
-});
 
-// server.post('/products', createProduct);
+
 
 server.listen(process.env.PORT, () => {
   console.log(process.env.PORT);
