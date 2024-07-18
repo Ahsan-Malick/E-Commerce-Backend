@@ -14,6 +14,7 @@ exports.cookieExtractor = function(req, res){
   if(req && req.cookies){
     token = req.cookies['jwt'];
   }
+ 
 
 
   return token;

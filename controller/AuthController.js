@@ -21,7 +21,6 @@ exports.createUser = async (req, res) => {
             password: hashedPassword,
             salt: salt,
           });
-          console.log({hashedPassword})
           const doc = await user.save();
           req.login(sanitizeUser(doc), () => {
             //this also calls serializer and add to user, creates a session for
@@ -48,6 +47,7 @@ exports.createUser = async (req, res) => {
   exports.loginUser = async (req, res) => {
     const id = req.user
     const token = jwt.sign(id, Key);
+    console.log(token)
     try {
       res.cookie("jwt", token, {
         expires: new Date(Date.now() + 360000),

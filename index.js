@@ -10,7 +10,6 @@ const session = require("express-session");
 const path = require('path');
 const crypto = require("crypto");
 const mongoose = require("mongoose");
-const { createProduct } = require("./controller/ProductsController");
 const Router = require("./routes/ProductRoute");
 const brandRouter = require("./routes/BrandRoute");
 const categoryRouter = require("./routes/CategoryRoute");
@@ -18,7 +17,6 @@ const userRouter = require("./routes/UserRoute");
 const cartRouter = require("./routes/CartRoute");
 const addressRouter = require("./routes/AddressRoute");
 const orderRouter = require("./routes/OrderRoute");
-const testRouter = require("./routes/testRoute");
 const authRouter = require("./routes/authRoute");
 const { isAuth, sanitizeUser } = require("./services/Common");
 const jwt = require("jsonwebtoken");
@@ -28,7 +26,7 @@ const { User } = require("./model/UserModel");
 const cors = require("cors");
 
 const Key = "secret";
-// const Key = process.env.KEY;
+
 //JWT options
 const opts = {};
 // opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
@@ -36,8 +34,8 @@ opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = Key;
 //middlewares
 
-// server.use(cors());
-// server.use(express.static('build'));
+server.use(cors());
+
 
 server.use(express.static(path.resolve(__dirname, 'build')));
 server.use(cookieParser()); //to read cookies comming from client request
@@ -50,7 +48,7 @@ server.use(
 );
 server.use(passport.authenticate("session")); //this middleware help to run deserializer
 server.use(express.json()); //to parse req.body
-server.use("/products", isAuth(), Router);
+server.use("/products",  Router);
 server.use("/brands", isAuth(), brandRouter);
 server.use("/category", isAuth(), categoryRouter);
 server.use("/user", isAuth(), userRouter);
@@ -96,7 +94,6 @@ passport.use(
       );
     } catch (error) {
       const user = await User.find();
-      console.log({ message: error });
     }
   })
 );
