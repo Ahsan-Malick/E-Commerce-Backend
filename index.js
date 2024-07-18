@@ -25,17 +25,16 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 const { User } = require("./model/UserModel");
 const cors = require("cors");
 
-const Key = "secret";
 
+const Key = process.env.KEY;
 //JWT options
 const opts = {};
-// opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = Key;
 //middlewares
 
-server.use(cors());
-
+// server.use(cors());
+// server.use(express.static('build'));
 
 server.use(express.static(path.resolve(__dirname, 'build')));
 server.use(cookieParser()); //to read cookies comming from client request
